@@ -1,6 +1,8 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
+import { AdminGuard } from 'src/auth/guards/role.guard';
 
 @ApiTags('Users')
 @Controller('users')
@@ -10,8 +12,9 @@ export class UsersController {
   async getUsers() {
     return this.userService.findMany();
   }
-  @Get(':id')
-  async getUser(@Param('id') id: string) {
-    return this.userService.findOneById(id);
+  @UseGuards(AdminGuard)
+  @Get('test')
+  async test(@Req() request: Request) {
+    return { user: request.user };
   }
 }
