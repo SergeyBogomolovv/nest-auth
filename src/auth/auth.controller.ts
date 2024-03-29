@@ -13,7 +13,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { Tokens } from './interfaces';
-import { Response, Request } from 'express';
+import { Response, Request, response } from 'express';
 import { Cookie } from '@common/common/decorators/cookies.decorator';
 
 @Controller('auth')
@@ -47,7 +47,13 @@ export class AuthController {
     }
     return { accesToken: token };
   }
-
+  @Get('logout')
+  async logout(@Req() request: Request, @Res() response: Response) {
+    const token = request.cookies['refreshToken'];
+    await this.authService.logout(token);
+    response.clearCookie('refreshToken');
+    response.status(HttpStatus.CREATED);
+  }
   private setRefreshTokenToCookie(tokens: Tokens, res: Response) {
     if (!tokens) {
       throw new UnauthorizedException();
@@ -60,10 +66,5 @@ export class AuthController {
       path: '/',
     });
     res.status(HttpStatus.CREATED).json({ accesToken: tokens.accesToken });
-  }
-  @Get('logout')
-  logout(@Req() request: Request) {
-    const token = request.cookies['refreshToken'];
-    return this.authService.logout(token);
   }
 }
