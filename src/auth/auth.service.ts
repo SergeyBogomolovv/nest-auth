@@ -42,13 +42,16 @@ export class AuthService {
     const refreshToken = await this.tokensService.generateRefreshToken(user.id);
     return { accesToken, refreshToken };
   }
-  async refresh(token: string): Promise<Tokens> {
-    const dbToken = await this.tokensService.getRefreshToken(token);
-    if (!dbToken) throw new UnauthorizedException();
+  async logout(token: string) {
     await this.tokensService.deleteRefreshToken(token);
+  }
+  async refresh(token: string) {
+    const dbToken = await this.tokensService.getRefreshToken(token);
+    if (!dbToken || new Date(dbToken.exp) < new Date()) {
+      await this.tokensService.deleteRefreshToken(token);
+      throw new UnauthorizedException();
+    }
     const user = await this.usersService.findOneById(dbToken.userId);
-    const accesToken = this.tokensService.generateAccesToken(user);
-    const refreshToken = await this.tokensService.generateRefreshToken(user.id);
-    return { accesToken, refreshToken };
+    return this.tokensService.generateAccesToken(user);
   }
 }

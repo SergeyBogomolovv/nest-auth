@@ -7,12 +7,13 @@ import {
   UnauthorizedException,
   Res,
   HttpStatus,
+  Req,
 } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { Tokens } from './interfaces';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { Cookie } from '@common/common/decorators/cookies.decorator';
 
 @Controller('auth')
@@ -34,20 +35,17 @@ export class AuthController {
     if (!user) {
       throw new BadRequestException('Unable to register user');
     }
-    return user;
+    return { succes: true };
   }
 
   @Get('refresh')
-  async refreshTokens(
-    @Cookie('refreshToken') refreshToken: string,
-    @Res() response: Response,
-  ) {
+  async refreshTokens(@Cookie('refreshToken') refreshToken: string) {
     if (!refreshToken) throw new UnauthorizedException();
-    const tokens = await this.authService.refresh(refreshToken);
-    if (!tokens) {
+    const token = await this.authService.refresh(refreshToken);
+    if (!token) {
       throw new BadRequestException('Unable to refresh');
     }
-    this.setRefreshTokenToCookie(tokens, response);
+    return { accesToken: token };
   }
 
   private setRefreshTokenToCookie(tokens: Tokens, res: Response) {
