@@ -1,8 +1,7 @@
-import { Controller, Delete, Get, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
-import { AdminGuard } from 'src/auth/guards/role.guard';
 
 @ApiTags('Users')
 @Controller('users')
