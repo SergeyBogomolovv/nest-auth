@@ -47,6 +47,7 @@ export class AuthController {
     }
     return { accesToken: token };
   }
+
   @Get('logout')
   async logout(@Req() request: Request, @Res() response: Response) {
     const token = request.cookies['refreshToken'];
@@ -54,6 +55,7 @@ export class AuthController {
     response.clearCookie('refreshToken');
     response.status(HttpStatus.CREATED);
   }
+
   private setRefreshTokenToCookie(tokens: Tokens, res: Response) {
     if (!tokens) {
       throw new UnauthorizedException();

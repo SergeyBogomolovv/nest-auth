@@ -1,12 +1,14 @@
-import { Controller, Delete, Get, Param, Req } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private userService: UsersService) {}
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getUsers(@Req() request: Request) {
     console.log(request.user);
