@@ -7,6 +7,7 @@
 generator client {
   provider = "prisma-client-js"
 }
+
 enum UserRole {
   ADMIN
   USER
@@ -23,7 +24,9 @@ model User {
   password String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  image String?
+  emailVerified DateTime?
+  verifyLink String @unique
+  image String @default("/noavatar.png")
   role UserRole[] @default([USER])
   Token Token[]
   @@map("users")

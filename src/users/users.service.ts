@@ -17,7 +17,12 @@ export class UsersService {
   async create(user: Partial<User>): Promise<User> {
     const hashedPassword = await this.hashPassword(user.password);
     return this.prisma.user.create({
-      data: { email: user.email, password: hashedPassword, name: user.name },
+      data: {
+        email: user.email,
+        password: hashedPassword,
+        name: user.name,
+        verifyLink: user.verifyLink,
+      },
     });
   }
   async delete(id: string) {

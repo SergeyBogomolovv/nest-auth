@@ -8,6 +8,7 @@ import { options } from './config';
 import { TokensModule } from 'src/tokens/tokens.module';
 import { STRATEGIES } from './strategies';
 import { GUARDS } from './guards';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { GUARDS } from './guards';
     JwtModule.registerAsync(options()),
     PassportModule,
     TokensModule,
+    MailModule,
   ],
   providers: [AuthService, ...STRATEGIES, ...GUARDS],
   controllers: [AuthController],

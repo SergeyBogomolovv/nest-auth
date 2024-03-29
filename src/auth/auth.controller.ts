@@ -8,12 +8,13 @@ import {
   Res,
   HttpStatus,
   Req,
+  Param,
 } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { Tokens } from './interfaces';
-import { Response, Request, response } from 'express';
+import { Response, Request } from 'express';
 import { Cookie } from '@common/common/decorators/cookies.decorator';
 
 @Controller('auth')
@@ -35,7 +36,7 @@ export class AuthController {
     if (!user) {
       throw new BadRequestException('Unable to register user');
     }
-    return { succes: true };
+    return { message: 'Confirmation email sent!' };
   }
 
   @Get('refresh')
@@ -46,6 +47,12 @@ export class AuthController {
       throw new BadRequestException('Unable to refresh');
     }
     return { accesToken: token };
+  }
+
+  @Get('verify-email/:token')
+  async verify(@Param('token') token: string, @Res() res: Response) {
+    this.authService.verifyEmail(token);
+    res.redirect(`${process.env.EMAIL_VERIFY_REDIRECT_URL}`);
   }
 
   @Get('logout')
