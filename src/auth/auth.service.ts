@@ -15,6 +15,7 @@ import * as uuid from 'uuid';
 import { MailService } from 'src/mail/mail.service';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UserResponse } from 'src/users/responses/user.response';
 
 @Injectable()
 export class AuthService {
@@ -40,9 +41,9 @@ export class AuthService {
         this.logger.error(err);
         return null;
       });
-    return newUser;
+    return new UserResponse(newUser);
   }
-  async login(dto: LoginDto): Promise<Tokens> {
+  async login(dto: LoginDto) {
     const user: User = await this.usersService
       .findOneByEmail(dto.email)
       .catch((err) => {
@@ -57,7 +58,7 @@ export class AuthService {
     }
     const accesToken = this.tokensService.generateAccesToken(user);
     const refreshToken = await this.tokensService.generateRefreshToken(user.id);
-    return { accesToken, refreshToken };
+    return { accesToken, refreshToken, user: new UserResponse(user) };
   }
   async logout(token: string) {
     await this.tokensService.deleteRefreshToken(token);
@@ -81,6 +82,5 @@ export class AuthService {
       where: { verifyLink: token },
       data: { emailVerified: new Date() },
     });
-    return 'Email verified';
   }
 }

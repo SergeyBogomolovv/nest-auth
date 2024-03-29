@@ -23,11 +23,20 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() dto: LoginDto, @Res() response: Response) {
-    const tokens = await this.authService.login(dto);
-    if (!tokens) {
+    const data = await this.authService.login(dto);
+    if (!data) {
       throw new BadRequestException('Unable to login');
     }
-    this.setRefreshTokenToCookie(tokens, response);
+    response.cookie('refreshToken', data.refreshToken.token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      expires: new Date(data.refreshToken.exp),
+      secure: false,
+      path: '/',
+    });
+    response
+      .status(HttpStatus.CREATED)
+      .json({ accesToken: data.accesToken, user: data.user });
   }
 
   @Post('registration')
@@ -61,19 +70,5 @@ export class AuthController {
     await this.authService.logout(token);
     response.clearCookie('refreshToken');
     response.status(HttpStatus.CREATED);
-  }
-
-  private setRefreshTokenToCookie(tokens: Tokens, res: Response) {
-    if (!tokens) {
-      throw new UnauthorizedException();
-    }
-    res.cookie('refreshToken', tokens.refreshToken.token, {
-      httpOnly: true,
-      sameSite: 'lax',
-      expires: new Date(tokens.refreshToken.exp),
-      secure: false,
-      path: '/',
-    });
-    res.status(HttpStatus.CREATED).json({ accesToken: tokens.accesToken });
   }
 }

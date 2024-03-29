@@ -8,12 +8,11 @@ export class MailService {
   async sendActivationMail(dto: ActivationMailDto) {
     this.mailerService.sendMail({
       to: dto.to,
-      subject: `Активация пользователя`,
+      subject: `Verify your email`,
       text: '',
       html: `
         <div>
-          <h1>Для активации аккаунта перейдите по ссылке</h1>
-          <a href=${dto.link}>Ссылка</a>
+          <h1>To verify your account go <a href=${dto.link}>here</a></h1>
         </div>
     `,
     });
