@@ -20,15 +20,20 @@ model User {
   id    String     @id @default(cuid())
   email String  @unique
   name  String
-  password String? 
+  password String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
   image String?
-  role UserRole @default(USER)
+  role UserRole[] @default([USER])
   Token Token[]
+  @@map("users")
 }
 
 model Token {
   id           String     @id @default(cuid())
-  refreshToken String
+  token String @unique
+  exp DateTime
   user         User   @relation(fields: [userId], references: [id])
   userId       String
+  @@map("tokens")
 }

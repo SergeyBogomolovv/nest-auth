@@ -1,5 +1,4 @@
 import { PassportSerializer } from '@nestjs/passport';
-import { AuthService } from '../auth.service';
 import { Injectable } from '@nestjs/common';
 import { User } from 'prisma/prisma-client';
 import { UsersService } from 'src/users/users.service';

@@ -9,7 +9,8 @@ import { AdminGuard } from 'src/auth/guards/role.guard';
 export class UsersController {
   constructor(private userService: UsersService) {}
   @Get()
-  async getUsers() {
+  async getUsers(@Req() request: Request) {
+    console.log(request.user);
     return this.userService.findMany();
   }
   @UseGuards(AdminGuard)
