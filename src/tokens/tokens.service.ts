@@ -18,7 +18,7 @@ export class TokensService {
   getRefreshToken(token: string): Promise<Token> {
     return this.prisma.token.findFirst({ where: { token } });
   }
-  deleteRefreshToken(token: string): Promise<Token> {
+  async deleteRefreshToken(token: string): Promise<Token> {
     return this.prisma.token.delete({ where: { token } });
   }
   generateAccesToken(user: User) {

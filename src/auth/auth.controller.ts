@@ -61,4 +61,9 @@ export class AuthController {
     });
     res.status(HttpStatus.CREATED).json({ accesToken: tokens.accesToken });
   }
+  @Get('logout')
+  logout(@Req() request: Request) {
+    const token = request.cookies['refreshToken'];
+    return this.authService.logout(token);
+  }
 }

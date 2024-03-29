@@ -43,7 +43,10 @@ export class AuthService {
     return { accesToken, refreshToken };
   }
   async logout(token: string) {
-    await this.tokensService.deleteRefreshToken(token);
+    await this.tokensService.deleteRefreshToken(token).catch(() => {
+      return { succes: false };
+    });
+    return { succes: true };
   }
   async refresh(token: string) {
     const dbToken = await this.tokensService.getRefreshToken(token);
