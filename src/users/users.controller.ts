@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -13,9 +13,12 @@ export class UsersController {
     console.log(request.user);
     return this.userService.findMany();
   }
-  @UseGuards(AdminGuard)
-  @Get('test')
-  async test(@Req() request: Request) {
-    return { user: request.user };
+  @Get(':id')
+  async findById(@Param('id') id: string) {
+    return this.userService.findOneById(id);
+  }
+  @Delete(':id')
+  async deleteUser(@Param('id') id: string) {
+    return this.userService.delete(id);
   }
 }

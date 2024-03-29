@@ -1,44 +1,29 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { RenameDto } from './dto/rename.dto';
-
+import { User } from '@prisma/client';
+import brycpt from 'bcrypt';
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
   async findMany() {
-    const users = await this.prisma.user.findMany();
-    return users;
+    return await this.prisma.user.findMany();
   }
   async findOneById(id: string) {
-    const user = await this.prisma.user.findUnique({ where: { id } });
-    return user;
+    return await this.prisma.user.findUnique({ where: { id } });
   }
   async findOneByEmail(email: string) {
-    const user = await this.prisma.user.findUnique({ where: { email } });
-    return user;
+    return await this.prisma.user.findUnique({ where: { email } });
   }
-  async create(dto: CreateUserDto) {
-    try {
-      const user = await this.prisma.user.create({ data: { ...dto } });
-      return user;
-    } catch (error) {
-      throw new HttpException('Failed to create user', HttpStatus.BAD_GATEWAY);
-    }
-  }
-  async rename(dto: RenameDto) {
-    const user = await this.prisma.user.update({
-      where: { id: dto.id },
-      data: { name: dto.name },
+  async create(user: Partial<User>) {
+    const hashedPassword = await this.hashPassword(user.password);
+    return await this.prisma.user.create({
+      data: { email: user.email, password: hashedPassword, name: user.name },
     });
-    return user;
   }
   async delete(id: string) {
-    try {
-      const user = await this.prisma.user.delete({ where: { id } });
-      return user;
-    } catch (error) {
-      throw new HttpException('Failed to delete user', HttpStatus.BAD_GATEWAY);
-    }
+    return await this.prisma.user.delete({ where: { id } });
+  }
+  private async hashPassword(password: string) {
+    return await brycpt.hash(password, 7);
   }
 }
