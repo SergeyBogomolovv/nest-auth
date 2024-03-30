@@ -7,7 +7,6 @@ import {
 import { RegisterDto } from './dto/register.dto';
 import { UsersService } from 'src/users/users.service';
 import { LoginDto } from './dto/login.dto';
-import { Tokens } from './interfaces';
 import { compareSync } from 'bcrypt';
 import { User } from '@prisma/client';
 import { TokensService } from 'src/tokens/tokens.service';
@@ -66,7 +65,8 @@ export class AuthService {
   }
   async refresh(token: string) {
     const dbToken = await this.tokensService.getRefreshToken(token);
-    if (!dbToken || new Date(dbToken.exp) < new Date()) {
+    if (!dbToken) throw new UnauthorizedException();
+    if (new Date(dbToken.exp) < new Date()) {
       await this.tokensService.deleteRefreshToken(token);
       throw new UnauthorizedException();
     }

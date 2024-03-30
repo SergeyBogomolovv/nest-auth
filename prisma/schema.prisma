@@ -27,7 +27,7 @@ model User {
   emailVerified DateTime?
   verifyLink String @unique
   image String @default("/noavatar.png")
-  role UserRole[] @default([USER])
+  roles UserRole[] @default([USER])
   Token Token[]
   @@map("users")
 }

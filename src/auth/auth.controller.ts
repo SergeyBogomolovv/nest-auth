@@ -9,18 +9,18 @@ import {
   HttpStatus,
   Req,
   Param,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
-import { Tokens } from './interfaces';
 import { Response, Request } from 'express';
-import { Cookie } from '@common/common/decorators/cookies.decorator';
-
+import { Cookie } from 'lib/decorators/cookies.decorator';
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
-
   @Post('login')
   async login(@Body() dto: LoginDto, @Res() response: Response) {
     const data = await this.authService.login(dto);

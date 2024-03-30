@@ -15,7 +15,7 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { email } });
   }
   async create(user: Partial<User>): Promise<User> {
-    const hashedPassword = await this.hashPassword(user.password);
+    const hashedPassword = this.hashPassword(user.password);
     return this.prisma.user.create({
       data: {
         email: user.email,
@@ -26,7 +26,9 @@ export class UsersService {
     });
   }
   async delete(id: string) {
-    return await this.prisma.user.delete({ where: { id } });
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    await this.prisma.token.deleteMany({ where: { userId: user.id } });
+    return this.prisma.user.delete({ where: { id } });
   }
   private hashPassword(password: string) {
     return hashSync(password, 7);

@@ -27,7 +27,7 @@ export class TokensService {
       this.jwtService.sign({
         id: user.id,
         email: user.email,
-        roles: user.role,
+        roles: user.roles,
       })
     );
   }
