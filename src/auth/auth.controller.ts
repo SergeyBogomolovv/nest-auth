@@ -17,6 +17,7 @@ import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
 import { Cookie } from 'lib/decorators/cookies.decorator';
+
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('auth')
 export class AuthController {
@@ -67,8 +68,12 @@ export class AuthController {
   @Get('logout')
   async logout(@Req() request: Request, @Res() response: Response) {
     const token = request.cookies['refreshToken'];
+    if (!token) {
+      response.sendStatus(HttpStatus.OK);
+      return;
+    }
     await this.authService.logout(token);
     response.clearCookie('refreshToken');
-    response.status(HttpStatus.CREATED);
+    response.sendStatus(HttpStatus.OK);
   }
 }

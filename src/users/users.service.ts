@@ -2,17 +2,35 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { hashSync } from 'bcrypt';
+import { Cache } from '@nestjs/cache-manager';
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private cacheManager: Cache,
+  ) {}
   findMany(): Promise<User[]> {
     return this.prisma.user.findMany();
   }
-  findOneById(id: string): Promise<User> {
-    return this.prisma.user.findUnique({ where: { id } });
+  async findOneById(id: string): Promise<User> {
+    const user = await this.cacheManager.get<User>(id);
+    if (!user) {
+      const dbUser = await this.prisma.user.findUnique({ where: { id } });
+      if (!dbUser) return null;
+      await this.cacheManager.set(id, dbUser);
+      return dbUser;
+    }
+    return user;
   }
-  findOneByEmail(email: string): Promise<User> {
-    return this.prisma.user.findUnique({ where: { email } });
+  async findOneByEmail(email: string): Promise<User> {
+    const user = await this.cacheManager.get<User>(email);
+    if (!user) {
+      const dbUser = await this.prisma.user.findUnique({ where: { email } });
+      if (!dbUser) return null;
+      await this.cacheManager.set(email, dbUser);
+      return dbUser;
+    }
+    return user;
   }
   async create(user: Partial<User>): Promise<User> {
     const hashedPassword = this.hashPassword(user.password);

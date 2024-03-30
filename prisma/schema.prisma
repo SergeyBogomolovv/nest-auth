@@ -36,7 +36,7 @@ model Token {
   id           String     @id @default(cuid())
   token String @unique
   exp DateTime
-  user         User   @relation(fields: [userId], references: [id])
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       String
   @@map("tokens")
 }

@@ -4,16 +4,13 @@ import {
   Delete,
   Get,
   Param,
-  Req,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { AccesToken } from 'lib/decorators/acces-token.decorator';
-import { UserOptionsGuard } from 'lib/guards/user-options.guard';
+import { UserOptionsGuard } from 'src/auth/guards/user-options.guard';
 
 @ApiTags('Users')
 @Controller('users')
@@ -22,8 +19,7 @@ export class UsersController {
   @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getUsers(@Req() request: Request) {
-    console.log(request.user);
+  async getUsers() {
     return this.userService.findMany();
   }
   @UseInterceptors(ClassSerializerInterceptor)
