@@ -58,7 +58,7 @@ export class AuthService {
     }
     const accesToken = this.tokensService.generateAccesToken(user);
     const refreshToken = await this.tokensService.generateRefreshToken(user.id);
-    return { accesToken, refreshToken, user: new UserResponse(user) };
+    return { accesToken, refreshToken };
   }
   async logout(token: string) {
     await this.tokensService.deleteRefreshToken(token);
@@ -89,6 +89,6 @@ export class AuthService {
     if (!user) throw new BadRequestException();
     const accesToken = this.tokensService.generateAccesToken(user);
     const refreshToken = await this.tokensService.generateRefreshToken(user.id);
-    return { accesToken, refreshToken, user: new UserResponse(user) };
+    return { accesToken, refreshToken };
   }
 }

@@ -14,6 +14,7 @@ import { UserOptionsGuard } from 'src/auth/guards/user-options.guard';
 import { UserResponse } from './responses/user.response';
 
 @ApiTags('Пользователи')
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
 export class UsersController {
   constructor(private userService: UsersService) {}
@@ -23,7 +24,6 @@ export class UsersController {
       'Получение всех пользователей, стоит гуард на наличие jwt токена',
   })
   @ApiResponse({ status: 200, type: [UserResponse] })
-  @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtAuthGuard)
   @Get()
   async getUsers() {
@@ -34,7 +34,6 @@ export class UsersController {
     description: 'Получение одного пользователя по ид',
   })
   @ApiResponse({ status: 200, type: UserResponse })
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   async findById(@Param('id') id: string) {
     return this.userService.findOneById(id);
@@ -47,7 +46,6 @@ export class UsersController {
   })
   @ApiResponse({ status: 200, type: UserResponse })
   @UseGuards(UserOptionsGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   @Delete(':id')
   async deleteUser(@Param('id') id: string) {
     return this.userService.delete(id);

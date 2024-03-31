@@ -28,6 +28,8 @@ export class TokensService {
         id: user.id,
         email: user.email,
         roles: user.roles,
+        image: user.image,
+        emailVerified: user.emailVerified,
       })
     );
   }

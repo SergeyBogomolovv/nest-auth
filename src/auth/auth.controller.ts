@@ -61,7 +61,7 @@ export class AuthController {
   @ApiOperation({
     summary: 'Логин через гугл после редиректа',
     description:
-      'Делаем запрос сюда с token в query, он проверяется через гугл и потом возвращается информация о пользователе и ставятся acces refresh',
+      'Делаем запрос сюда с token в query, он проверяется через гугл и потом возвращается acces и ставится refresh',
   })
   @ApiResponse({ status: 201, type: LoginResponse })
   @Get('google/get-user')
@@ -75,17 +75,17 @@ export class AuthController {
       )
       .pipe(
         map(async ({ data: { email } }) => {
-          const user = await this.authService.googleAuth(email);
-          response.cookie('refreshToken', user.refreshToken.token, {
+          const data = await this.authService.googleAuth(email);
+          response.cookie('refreshToken', data.refreshToken.token, {
             httpOnly: true,
             sameSite: 'lax',
-            expires: new Date(user.refreshToken.exp),
+            expires: new Date(data.refreshToken.exp),
             secure: false,
             path: '/',
           });
           response
             .status(HttpStatus.CREATED)
-            .json({ accesToken: user.accesToken, user: user.user });
+            .json({ accesToken: data.accesToken });
         }),
       );
   }
@@ -108,9 +108,7 @@ export class AuthController {
       secure: false,
       path: '/',
     });
-    response
-      .status(HttpStatus.CREATED)
-      .json({ accesToken: data.accesToken, user: data.user });
+    response.status(HttpStatus.CREATED).json({ accesToken: data.accesToken });
   }
   @ApiOperation({
     summary: 'Регистрация',
