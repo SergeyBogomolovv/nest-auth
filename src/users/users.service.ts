@@ -12,9 +12,13 @@ export class UsersService {
   findMany(): Promise<User[]> {
     return this.prisma.user.findMany();
   }
-  async findOneById(id: string): Promise<User> {
+  async findOneById(id: string, isReset = false): Promise<User> {
+    if (isReset) {
+      await this.cacheManager.del(id);
+    }
     const user = await this.cacheManager.get<User>(id);
     if (!user) {
+      console.log('FindOne');
       const dbUser = await this.prisma.user.findUnique({ where: { id } });
       if (!dbUser) return null;
       await this.cacheManager.set(id, dbUser);
@@ -22,9 +26,13 @@ export class UsersService {
     }
     return user;
   }
-  async findOneByEmail(email: string): Promise<User> {
+  async findOneByEmail(email: string, isReset = false): Promise<User> {
+    if (isReset) {
+      await this.cacheManager.del(email);
+    }
     const user = await this.cacheManager.get<User>(email);
     if (!user) {
+      console.log('FindOne');
       const dbUser = await this.prisma.user.findUnique({ where: { email } });
       if (!dbUser) return null;
       await this.cacheManager.set(email, dbUser);
@@ -46,6 +54,10 @@ export class UsersService {
   async delete(id: string) {
     const user = await this.prisma.user.findUnique({ where: { id } });
     await this.prisma.token.deleteMany({ where: { userId: user.id } });
+    await Promise.all([
+      this.cacheManager.del(id),
+      this.cacheManager.del(user.email),
+    ]);
     return this.prisma.user.delete({ where: { id } });
   }
   private hashPassword(password: string) {

@@ -44,7 +44,7 @@ export class AuthService {
   }
   async login(dto: LoginDto) {
     const user: User = await this.usersService
-      .findOneByEmail(dto.email)
+      .findOneByEmail(dto.email, true)
       .catch((err) => {
         this.logger.error(err);
         return null;
@@ -70,7 +70,7 @@ export class AuthService {
       await this.tokensService.deleteRefreshToken(token);
       throw new UnauthorizedException();
     }
-    const user = await this.usersService.findOneById(dbToken.userId);
+    const user = await this.usersService.findOneById(dbToken.userId, true);
     return this.tokensService.generateAccesToken(user);
   }
   async verifyEmail(token: string) {
