@@ -25,7 +25,7 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   emailVerified DateTime?
-  verifyLink String @unique
+  verifyLink String? @unique
   image String @default("/noavatar.png")
   roles UserRole[] @default([USER])
   Token Token[]

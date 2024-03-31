@@ -9,6 +9,7 @@ import { TokensModule } from 'src/tokens/tokens.module';
 import { STRATEGIES } from './strategies';
 import { GUARDS } from './guards';
 import { MailModule } from 'src/mail/mail.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { MailModule } from 'src/mail/mail.module';
     PassportModule,
     TokensModule,
     MailModule,
+    HttpModule,
   ],
   providers: [AuthService, ...STRATEGIES, ...GUARDS],
   controllers: [AuthController],

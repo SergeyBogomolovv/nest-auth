@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   Logger,
@@ -82,5 +83,12 @@ export class AuthService {
       where: { verifyLink: token },
       data: { emailVerified: new Date() },
     });
+  }
+  async googleAuth(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) throw new BadRequestException();
+    const accesToken = this.tokensService.generateAccesToken(user);
+    const refreshToken = await this.tokensService.generateRefreshToken(user.id);
+    return { accesToken, refreshToken, user: new UserResponse(user) };
   }
 }
