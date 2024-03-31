@@ -39,7 +39,7 @@ export class AuthController {
   async googleCallback(@Req() request: Request, @Res() response: Response) {
     const token = request.user['accesToken'];
     return response.redirect(
-      `${process.env.CLIET_URL}/google/callback?token=${token}`,
+      `${process.env.GOOGLE_CALLBACK_CLIENT}?token=${token}`,
     );
   }
   @Get('google/get-user')
