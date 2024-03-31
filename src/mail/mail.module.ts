@@ -3,19 +3,22 @@ import { MailService } from './mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
-  providers: [MailService],
   imports: [
     MailerModule.forRoot({
-      transport: 'smtps://geraxfn@gmail.com:rvsm epcq nzcf obmm@smtp.gmail.com',
+      transport: `${process.env.MAIL_TRANSPORT}`,
       defaults: {
-        host: 'smtp.gmail.com',
-        from: 'geraxfn@gmail.com',
-        auth: { user: 'geraxfn@gmail.com', pass: 'rvsm epcq nzcf obmm' },
+        host: `${process.env.MAIL_HOST}`,
+        from: `${process.env.MAIL_USER}`,
+        auth: {
+          user: `${process.env.MAIL_USER}`,
+          pass: `${process.env.MAIL_PASS}`,
+        },
         secure: false,
         port: 587,
       },
     }),
   ],
+  providers: [MailService],
   exports: [MailService],
 })
 export class MailModule {}

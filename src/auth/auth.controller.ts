@@ -22,7 +22,11 @@ import { Cookie } from 'lib/decorators/cookies.decorator';
 import { GoogleAuthGuard } from './guards/google.guard';
 import { HttpService } from '@nestjs/axios';
 import { map } from 'rxjs';
-
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { LoginResponse } from './response/login-response';
+import { RegistrationResponse } from './response/registration-response';
+import { RefreshResponse } from './response/refresh-response';
+@ApiTags('Авторизация')
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('auth')
 export class AuthController {
@@ -31,9 +35,21 @@ export class AuthController {
     private httpService: HttpService,
   ) {}
 
+  @ApiOperation({
+    summary: 'Логин через гугл',
+    description: 'Редиректит на страницу гугла, потом на следующий поинт',
+  })
+  @ApiResponse({ status: 300 })
   @UseGuards(GoogleAuthGuard)
   @Get('login/google')
   async googleLogin() {}
+
+  @ApiOperation({
+    summary: 'Поинт после страницы гугла',
+    description:
+      'Редиректит на пользовательский урл из GOOGLE_CALLBACK_CLIENT из .env с token в query параметрах, на клиенте должен стоять обработчик который с этим токеном будет делать запрос на следующий поинт',
+  })
+  @ApiResponse({ status: 300 })
   @UseGuards(GoogleAuthGuard)
   @Get('google/redirect')
   async googleCallback(@Req() request: Request, @Res() response: Response) {
@@ -42,6 +58,12 @@ export class AuthController {
       `${process.env.GOOGLE_CALLBACK_CLIENT}?token=${token}`,
     );
   }
+  @ApiOperation({
+    summary: 'Логин через гугл после редиректа',
+    description:
+      'Делаем запрос сюда с token в query, он проверяется через гугл и потом возвращается информация о пользователе и ставятся acces refresh',
+  })
+  @ApiResponse({ status: 201, type: LoginResponse })
   @Get('google/get-user')
   async getGoogleUser(
     @Query('token') token: string,
@@ -67,6 +89,12 @@ export class AuthController {
         }),
       );
   }
+  @ApiOperation({
+    summary: 'Обычный логин',
+    description:
+      'логин через почту и пароль, пускает только если у пользователя подтверждена почта',
+  })
+  @ApiResponse({ status: 201, type: LoginResponse })
   @Post('login')
   async login(@Body() dto: LoginDto, @Res() response: Response) {
     const data = await this.authService.login(dto);
@@ -84,7 +112,11 @@ export class AuthController {
       .status(HttpStatus.CREATED)
       .json({ accesToken: data.accesToken, user: data.user });
   }
-
+  @ApiOperation({
+    summary: 'Регистрация',
+    description: 'Регистрирует пользователя и отправляет письмо о входе',
+  })
+  @ApiResponse({ status: 201, type: RegistrationResponse })
   @Post('registration')
   async register(@Body() dto: RegisterDto) {
     const user = await this.authService.registration(dto);
@@ -93,7 +125,11 @@ export class AuthController {
     }
     return { message: 'Confirmation email sent!' };
   }
-
+  @ApiOperation({
+    summary: 'Обновление acces',
+    description: 'Возвращает новый токен, сравнивая токен из куков',
+  })
+  @ApiResponse({ status: 201, type: RefreshResponse })
   @Get('refresh')
   async refreshTokens(@Cookie('refreshToken') refreshToken: string) {
     if (!refreshToken) throw new UnauthorizedException();
@@ -103,13 +139,22 @@ export class AuthController {
     }
     return { accesToken: token };
   }
-
+  @ApiOperation({
+    summary: 'Подтверждение почты',
+    description:
+      'Происходит после перехода по ссылке из письма, ставит дату когда произошло подтверждение почты, потом редиректит на EMAIL_VERIFY_REDIRECT_URL',
+  })
+  @ApiResponse({ status: 300 })
   @Get('verify-email/:token')
   async verify(@Param('token') token: string, @Res() res: Response) {
     this.authService.verifyEmail(token);
     res.redirect(`${process.env.EMAIL_VERIFY_REDIRECT_URL}`);
   }
-
+  @ApiOperation({
+    summary: 'Выход',
+    description: 'удаляет рефреш токен из куков и бд',
+  })
+  @ApiResponse({ status: 200 })
   @Get('logout')
   async logout(@Req() request: Request, @Res() response: Response) {
     const token = request.cookies['refreshToken'];

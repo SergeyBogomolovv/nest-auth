@@ -11,10 +11,9 @@ async function bootstrap() {
   app.enableCors({ credentials: true, origin: process.env.CLIET_URL });
   app.use(passport.initialize());
   const config = new DocumentBuilder()
-    .setTitle('Nest js auth')
-    .setDescription('Creating auth with nest and next js')
+    .setTitle('Nest.js auth')
+    .setDescription('Auth app on nest.js with acces/refresh tokens, 2FA, OAuth')
     .setVersion('1.0.0')
-    .addTag('Gerax')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
