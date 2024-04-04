@@ -58,7 +58,7 @@ export class AuthService {
     }
     const accesToken = this.tokensService.generateAccesToken(user);
     const refreshToken = await this.tokensService.generateRefreshToken(user.id);
-    return { accesToken, refreshToken };
+    return { accesToken, refreshToken, user: new UserResponse(user) };
   }
   async logout(token: string) {
     await this.tokensService.deleteRefreshToken(token);
@@ -72,8 +72,10 @@ export class AuthService {
       throw new UnauthorizedException();
     }
     const user = await this.usersService.findOneById(dbToken.userId, true);
-    return this.tokensService.generateAccesToken(user);
+    const accesToken = this.tokensService.generateAccesToken(user);
+    return { user: new UserResponse(user), accesToken };
   }
+
   async verifyEmail(token: string) {
     const user = await this.prisma.user.findUnique({
       where: { verifyLink: token },
@@ -89,6 +91,6 @@ export class AuthService {
     if (!user) throw new BadRequestException();
     const accesToken = this.tokensService.generateAccesToken(user);
     const refreshToken = await this.tokensService.generateRefreshToken(user.id);
-    return { accesToken, refreshToken };
+    return { accesToken, refreshToken, user: new UserResponse(user) };
   }
 }

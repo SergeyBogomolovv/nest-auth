@@ -3,12 +3,17 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import * as passport from 'passport';
+import * as cors from 'cors';
 
 async function bootstrap() {
   const PORT = process.env.PORT || 5000;
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule);
+  const corsOptions = {
+    origin: 'http://localhost:5173',
+    credentials: true,
+  };
+  app.use(cors(corsOptions));
   app.use(cookieParser());
-  app.enableCors({ credentials: true, origin: process.env.CLIET_URL });
   app.use(passport.initialize());
   const config = new DocumentBuilder()
     .setTitle('Nest.js auth')

@@ -34,6 +34,7 @@ export class UsersController {
     description: 'Получение одного пользователя по ид',
   })
   @ApiResponse({ status: 200, type: UserResponse })
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findById(@Param('id') id: string) {
     return this.userService.findOneById(id);

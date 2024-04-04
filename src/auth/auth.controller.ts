@@ -85,7 +85,7 @@ export class AuthController {
           });
           response
             .status(HttpStatus.CREATED)
-            .json({ accesToken: data.accesToken });
+            .json({ accesToken: data.accesToken, user: data.user });
         }),
       );
   }
@@ -108,7 +108,9 @@ export class AuthController {
       secure: false,
       path: '/',
     });
-    response.status(HttpStatus.CREATED).json({ accesToken: data.accesToken });
+    response
+      .status(HttpStatus.CREATED)
+      .json({ accesToken: data.accesToken, user: data.user });
   }
   @ApiOperation({
     summary: 'Регистрация',
@@ -131,11 +133,11 @@ export class AuthController {
   @Get('refresh')
   async refreshTokens(@Cookie('refreshToken') refreshToken: string) {
     if (!refreshToken) throw new UnauthorizedException();
-    const token = await this.authService.refresh(refreshToken);
-    if (!token) {
+    const data = await this.authService.refresh(refreshToken);
+    if (!data) {
       throw new BadRequestException('Unable to refresh');
     }
-    return { accesToken: token };
+    return { accesToken: data.accesToken, user: data.user };
   }
   @ApiOperation({
     summary: 'Подтверждение почты',
