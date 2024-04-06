@@ -21,6 +21,7 @@ export class RegisterDto {
   })
   @IsString()
   @MinLength(6)
+  @Validate(IsPasswordsMatchingConstraint)
   password: string;
   @ApiProperty({
     example: '123456',

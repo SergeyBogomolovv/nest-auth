@@ -28,7 +28,6 @@ import { RegistrationResponse } from './response/registration-response';
 import { RefreshResponse } from './response/refresh-response';
 
 @ApiTags('Авторизация')
-@UseInterceptors(ClassSerializerInterceptor)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -121,6 +120,7 @@ export class AuthController {
     description: 'Регистрирует пользователя и отправляет письмо о входе',
   })
   @ApiResponse({ status: 201, type: RegistrationResponse })
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post('registration')
   async register(@Body() dto: RegisterDto) {
     const user = await this.authService.registration(dto);

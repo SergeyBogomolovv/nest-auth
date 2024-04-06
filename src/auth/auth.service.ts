@@ -30,8 +30,10 @@ export class AuthService {
   async registration(dto: RegisterDto) {
     const user = await this.usersService.findOneByEmail(dto.email);
     if (user) throw new ConflictException('User is already exists');
+    if (dto.password !== dto.passwordRepeat)
+      throw new BadRequestException('Passwords aren`t match');
     const verifyLink = uuid.v4();
-    await this.mailService.sendActivationMail({
+    this.mailService.sendActivationMail({
       to: dto.email,
       link: `${this.configService.get('SERVER_URL')}/auth/verify-email/${verifyLink}`,
     });
