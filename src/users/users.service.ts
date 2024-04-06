@@ -4,11 +4,13 @@ import { User } from '@prisma/client';
 import { hashSync } from 'bcrypt';
 import { Cache } from '@nestjs/cache-manager';
 import { UserResponse } from './responses/user.response';
+import { FilesService } from 'src/files/files.service';
 @Injectable()
 export class UsersService {
   constructor(
     private prisma: PrismaService,
     private cacheManager: Cache,
+    private yandex: FilesService,
   ) {}
   async findMany(): Promise<UserResponse[]> {
     const users = await this.prisma.user.findMany();
