@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   Put,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -15,6 +16,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UserOptionsGuard } from 'src/auth/guards/user-options.guard';
 import { UserResponse } from './responses/user.response';
 import { RenameDto } from './dto/rename.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Пользователи')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -53,6 +55,21 @@ export class UsersController {
   @Put('rename/:id')
   async renameUser(@Param('id') id: string, @Body() body: RenameDto) {
     return this.userService.rename(id, body.name);
+  }
+  @ApiOperation({
+    summary: 'Изменение аватарки',
+    description:
+      'Изменение аватарки, стоит гуард, который проверяет наличие роли админ или соответствие ид пользователя из токена',
+  })
+  @ApiResponse({ status: 200, type: UserResponse })
+  @UseGuards(UserOptionsGuard)
+  @UseInterceptors(FileInterceptor('image'))
+  @Put('update-image/:id')
+  async updateImage(
+    @Param('id') id: string,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    return this.userService.changeImage(id, image);
   }
 
   @ApiOperation({
