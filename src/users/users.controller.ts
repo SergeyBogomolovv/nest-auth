@@ -1,9 +1,11 @@
 import {
+  Body,
   ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
   Param,
+  Put,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -12,6 +14,7 @@ import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UserOptionsGuard } from 'src/auth/guards/user-options.guard';
 import { UserResponse } from './responses/user.response';
+import { RenameDto } from './dto/rename.dto';
 
 @ApiTags('Пользователи')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -38,6 +41,18 @@ export class UsersController {
   @Get(':id')
   async findById(@Param('id') id: string) {
     return this.userService.findOneById(id);
+  }
+
+  @ApiOperation({
+    summary: 'Изменение имени',
+    description:
+      'Изменение имени, стоит гуард, который проверяет наличие роли админ или соответствие ид пользователя из токена',
+  })
+  @ApiResponse({ status: 200, type: UserResponse })
+  @UseGuards(UserOptionsGuard)
+  @Put('rename/:id')
+  async renameUser(@Param('id') id: string, @Body() body: RenameDto) {
+    return this.userService.rename(id, body.name);
   }
 
   @ApiOperation({

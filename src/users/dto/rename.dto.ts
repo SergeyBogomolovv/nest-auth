@@ -3,9 +3,6 @@ import { IsString } from 'class-validator';
 
 export class RenameDto {
   @ApiProperty({ example: 'gerax', description: 'username' })
-  @IsString({ message: 'Это поле должно быть строкой' })
+  @IsString({ message: 'Name is required' })
   readonly name: string;
-  @IsString({ message: 'Должно быть строкой' })
-  @ApiProperty({ example: 'sdfjkdsfj-sdfsdf', description: 'userId' })
-  readonly id: string;
 }

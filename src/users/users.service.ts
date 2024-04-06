@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { hashSync } from 'bcrypt';
@@ -50,6 +50,12 @@ export class UsersService {
         verifyLink: user.verifyLink,
       },
     });
+  }
+  async rename(id: string, name: string) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) throw new BadRequestException('User doesn`t exists');
+    this.prisma.user.update({ where: { id }, data: { name } });
+    return this.prisma.user.update({ where: { id }, data: { name } });
   }
   async delete(id: string) {
     const user = await this.prisma.user.findUnique({ where: { id } });
