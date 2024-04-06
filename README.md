@@ -5,11 +5,6 @@
 - Role based acces
 - Email verification
 - OAuth
-
-## Coming soon
-
-- 2FA
-- Change password
 - Customizing profile
 
 ### Google auth
