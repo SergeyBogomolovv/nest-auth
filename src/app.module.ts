@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PassportModule } from '@nestjs/passport';
 import { FilesModule } from './files/files.module';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { FilesModule } from './files/files.module';
     PrismaModule,
     ConfigModule.forRoot({ isGlobal: true }),
     FilesModule,
+    PostsModule,
   ],
 })
 export class AppModule {}
