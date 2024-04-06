@@ -26,6 +26,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginResponse } from './response/login-response';
 import { RegistrationResponse } from './response/registration-response';
 import { RefreshResponse } from './response/refresh-response';
+
 @ApiTags('Авторизация')
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('auth')
@@ -34,7 +35,7 @@ export class AuthController {
     private authService: AuthService,
     private httpService: HttpService,
   ) {}
-
+  // Логин через гугл
   @ApiOperation({
     summary: 'Логин через гугл',
     description: 'Редиректит на страницу гугла, потом на следующий поинт',
@@ -43,7 +44,7 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   @Get('login/google')
   async googleLogin() {}
-
+  //Поинт после страницы гугла
   @ApiOperation({
     summary: 'Поинт после страницы гугла',
     description:
@@ -58,8 +59,9 @@ export class AuthController {
       `${process.env.GOOGLE_CALLBACK_CLIENT}?token=${token}`,
     );
   }
+  // Получение информации по токену гугла
   @ApiOperation({
-    summary: 'Логин через гугл после редиректа',
+    summary: 'Получение информации по токену гугла',
     description:
       'Делаем запрос сюда с token в query, он проверяется через гугл и потом возвращается acces и ставится refresh',
   })
@@ -89,6 +91,7 @@ export class AuthController {
         }),
       );
   }
+  //Обычный логин через почту и пароль
   @ApiOperation({
     summary: 'Обычный логин',
     description:
@@ -112,6 +115,7 @@ export class AuthController {
       .status(HttpStatus.CREATED)
       .json({ accesToken: data.accesToken, user: data.user });
   }
+  //Регистрация через логин и пароль
   @ApiOperation({
     summary: 'Регистрация',
     description: 'Регистрирует пользователя и отправляет письмо о входе',
@@ -125,9 +129,11 @@ export class AuthController {
     }
     return { message: 'Confirmation email sent!' };
   }
+  //Рефреш
   @ApiOperation({
-    summary: 'Обновление acces',
-    description: 'Возвращает новый токен, сравнивая токен из куков',
+    summary: 'Рефреш информации',
+    description:
+      'Возвращает новый токен и пользователя, сравнивая токен из куков',
   })
   @ApiResponse({ status: 201, type: RefreshResponse })
   @Get('refresh')
@@ -135,10 +141,11 @@ export class AuthController {
     if (!refreshToken) throw new UnauthorizedException();
     const data = await this.authService.refresh(refreshToken);
     if (!data) {
-      throw new BadRequestException('Unable to refresh');
+      throw new BadRequestException('Unnable to refresh');
     }
     return { accesToken: data.accesToken, user: data.user };
   }
+  //Подтверждение почты
   @ApiOperation({
     summary: 'Подтверждение почты',
     description:
@@ -150,6 +157,7 @@ export class AuthController {
     this.authService.verifyEmail(token);
     res.redirect(`${process.env.EMAIL_VERIFY_REDIRECT_URL}`);
   }
+  //Logout
   @ApiOperation({
     summary: 'Выход',
     description: 'удаляет рефреш токен из куков и бд',

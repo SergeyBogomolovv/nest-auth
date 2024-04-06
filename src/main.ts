@@ -9,7 +9,7 @@ async function bootstrap() {
   const PORT = process.env.PORT || 5000;
   const app = await NestFactory.create(AppModule);
   const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: process.env.CLIET_URL,
     credentials: true,
   };
   app.use(cors(corsOptions));
@@ -17,7 +17,7 @@ async function bootstrap() {
   app.use(passport.initialize());
   const config = new DocumentBuilder()
     .setTitle('Nest.js auth')
-    .setDescription('Auth app on nest.js with acces/refresh tokens, 2FA, OAuth')
+    .setDescription('Auth app on nest.js with acces/refresh tokens, OAuth')
     .setVersion('1.0.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
