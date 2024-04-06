@@ -8,6 +8,7 @@ import { join } from 'path';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PassportModule } from '@nestjs/passport';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { PassportModule } from '@nestjs/passport';
     UsersModule,
     PrismaModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    FilesModule,
   ],
 })
 export class AppModule {}
