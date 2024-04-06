@@ -20,7 +20,6 @@ export class UsersService {
     }
     const user = await this.cacheManager.get<User>(id);
     if (!user) {
-      console.log('FindOne');
       const dbUser = await this.prisma.user.findUnique({ where: { id } });
       if (!dbUser) return null;
       await this.cacheManager.set(id, dbUser);
@@ -34,7 +33,6 @@ export class UsersService {
     }
     const user = await this.cacheManager.get<User>(email);
     if (!user) {
-      console.log('FindOne');
       const dbUser = await this.prisma.user.findUnique({ where: { email } });
       if (!dbUser) return null;
       await this.cacheManager.set(email, dbUser);

@@ -34,13 +34,14 @@ export class UsersController {
     description: 'Получение одного пользователя по ид',
   })
   @ApiResponse({ status: 200, type: UserResponse })
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findById(@Param('id') id: string) {
     return this.userService.findOneById(id);
   }
 
   @ApiOperation({
-    summary: 'Удаление пользователя пользователя',
+    summary: 'Удаление пользователя',
     description:
       'Удаление пользователя по ид, стоит гуард, который проверяет наличие роли админ или соответствие ид пользователя из токена на ид удаляемого пользователя. Так же удаляет токены этого пользователя',
   })
