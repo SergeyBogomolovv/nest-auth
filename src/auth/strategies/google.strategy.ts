@@ -41,6 +41,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
           name: `${user.firstName} ${user.lastName}`,
           image: user.picture,
           emailVerified: new Date(),
+          provider: 'GOOGLE',
         },
       });
     }

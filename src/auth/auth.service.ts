@@ -52,6 +52,8 @@ export class AuthService {
         this.logger.error(err);
         return null;
       });
+    if (user.provider !== 'CREDENTIALS')
+      throw new BadRequestException('Use google to login');
     if (!user || !compareSync(dto.password, user.password)) {
       throw new UnauthorizedException('Invalid credentials');
     }

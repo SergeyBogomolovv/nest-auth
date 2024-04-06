@@ -12,6 +12,10 @@ enum UserRole {
   ADMIN
   USER
 }
+enum Provider {
+  GOOGLE
+  CREDENTIALS
+}
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -29,6 +33,7 @@ model User {
   image String @default("/noavatar.png")
   roles UserRole[] @default([USER])
   Token Token[]
+  provider Provider @default(CREDENTIALS)
   @@map("users")
 }
 
