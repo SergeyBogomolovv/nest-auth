@@ -8,7 +8,6 @@ import { Observable } from 'rxjs';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
-
 @Injectable()
 export class PostActionsGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
@@ -20,7 +19,8 @@ export class PostActionsGuard implements CanActivate {
       const token = request.headers.authorization.split(' ')[1];
       if (!token) throw new UnauthorizedException();
       const user: User = this.jwtService.verify(token);
-      if (user.id !== request.params.id) throw new UnauthorizedException();
+      if (user.id !== request.params.id && !user.roles.includes('ADMIN'))
+        throw new UnauthorizedException();
       return true;
     } catch (error) {
       throw new UnauthorizedException();
