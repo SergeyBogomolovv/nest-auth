@@ -56,8 +56,19 @@ export class UsersService {
   async rename(id: string, name: string) {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new BadRequestException('User doesn`t exists');
-    this.prisma.user.update({ where: { id }, data: { name } });
     return this.prisma.user.update({ where: { id }, data: { name } });
+  }
+  async changeImage(id: string, image: Express.Multer.File) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) throw new BadRequestException('User doesn`t exists');
+    if (user.image.startsWith('avatars/')) {
+      await this.yandex.deleteAvatar(user.image);
+    }
+    const imageName = await this.yandex.uploadAvatar(image);
+    return this.prisma.user.update({
+      where: { id },
+      data: { image: imageName },
+    });
   }
   async delete(id: string) {
     const user = await this.prisma.user.findUnique({ where: { id } });
