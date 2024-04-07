@@ -29,7 +29,8 @@ export class AuthService {
   ) {}
   async registration(dto: RegisterDto) {
     const user = await this.usersService.findOneByEmail(dto.email);
-    if (user) throw new ConflictException('User is already exists');
+    if (user)
+      throw new ConflictException('User with this email is already exists');
     if (dto.password !== dto.passwordRepeat)
       throw new BadRequestException('Passwords aren`t match');
     const verifyLink = uuid.v4();
@@ -46,16 +47,14 @@ export class AuthService {
     return new UserResponse(newUser);
   }
   async login(dto: LoginDto) {
-    const user: User = await this.usersService
-      .findOneByEmail(dto.email, true)
-      .catch((err) => {
-        this.logger.error(err);
-        return null;
-      });
+    const user: User = await this.usersService.findOneByEmail(dto.email, true);
+    if (!user) {
+      throw new UnauthorizedException('Wrong password or email');
+    }
     if (user.provider !== 'CREDENTIALS')
-      throw new BadRequestException('Use google to login');
-    if (!user || !compareSync(dto.password, user.password)) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Use google to login');
+    if (!compareSync(dto.password, user.password)) {
+      throw new UnauthorizedException('Wrong password or email');
     }
     if (!user.emailVerified) {
       throw new UnauthorizedException('Email is not verified');
