@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UsersService } from 'src/users/users.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { PaginationParams } from './dto/pagination-params';
 
 @Injectable()
 export class PostsService {
@@ -10,11 +11,11 @@ export class PostsService {
     private userService: UsersService,
     private prisma: PrismaService,
   ) {}
-  async getMany(limit: number, page: number) {
+  async getMany(params: PaginationParams) {
     return this.prisma.post.findMany({
       include: { author: true },
-      skip: limit * page - limit,
-      take: limit,
+      skip: params.limit * params.page - params.limit,
+      take: params.limit,
     });
   }
   async getOne(id: string) {

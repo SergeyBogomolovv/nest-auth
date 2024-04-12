@@ -10,6 +10,8 @@ import {
   Query,
   UseGuards,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { UserId } from 'lib/decorators/user-id.decorator';
@@ -29,10 +31,11 @@ export class PostsController {
     summary: 'Получение постов',
     description: 'Получение постов в зависимости от страницы и лимита',
   })
+  @UsePipes(new ValidationPipe({ transform: true }))
   @ApiResponse({ status: 200, type: [PostResponse] })
   @Get()
   async getMany(@Query() params: PaginationParams) {
-    return this.postService.getMany(params.limit, params.page);
+    return this.postService.getMany(params);
   }
   @ApiOperation({
     summary: 'Получение одного поста',

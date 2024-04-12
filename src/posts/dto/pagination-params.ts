@@ -1,11 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumberString, IsString } from 'class-validator';
-
+import { IsNumber } from 'class-validator';
+import { Type } from 'class-transformer';
 export class PaginationParams {
+  @Type(() => Number)
   @ApiProperty({ example: '10', description: 'limit' })
-  @IsNumberString()
+  @IsNumber()
   readonly limit: number;
+  @Type(() => Number)
   @ApiProperty({ example: '5', description: 'page' })
-  @IsNumberString()
+  @IsNumber()
   readonly page: number;
 }
