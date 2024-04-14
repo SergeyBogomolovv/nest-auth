@@ -12,36 +12,49 @@ enum UserRole {
   ADMIN
   USER
 }
+
 enum Provider {
   GOOGLE
   CREDENTIALS
 }
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id    String     @id @default(cuid())
-  email String  @unique
-  name  String
-  password String?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id            String     @id @default(cuid())
+  email         String     @unique
+  name          String
+  password      String?
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
   emailVerified DateTime?
-  verifyLink String? @unique
-  image String @default("/noavatar.png")
-  roles UserRole[] @default([USER])
-  Token Token[]
-  provider Provider @default(CREDENTIALS)
+  verifyLink    String?    @unique
+  image         String     @default("/noavatar.png")
+  roles         UserRole[] @default([USER])
+  Token         Token[]
+  provider      Provider   @default(CREDENTIALS)
+  posts          Post[]
   @@map("users")
 }
 
+model Post {
+  id       String @id @default(cuid())
+  title    String
+  createdAt     DateTime   @default(now()) @map("created_at")
+  content  String
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+}
+
 model Token {
-  id           String     @id @default(cuid())
-  token String @unique
-  exp DateTime
-  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String
+  id     String   @id @default(cuid())
+  token  String   @unique
+  exp    DateTime
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
   @@map("tokens")
 }

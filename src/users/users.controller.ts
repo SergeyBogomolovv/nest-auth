@@ -17,6 +17,7 @@ import { UserOptionsGuard } from 'src/auth/guards/user-options.guard';
 import { UserResponse } from './responses/user.response';
 import { RenameDto } from './dto/rename.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { UserId } from 'lib/decorators/user-id.decorator';
 
 @ApiTags('Пользователи')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -40,7 +41,7 @@ export class UsersController {
   })
   @ApiResponse({ status: 200, type: UserResponse })
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
+  @Get('one/:id')
   async findById(@Param('id') id: string) {
     return this.userService.findOneById(id);
   }
@@ -48,25 +49,23 @@ export class UsersController {
   @ApiOperation({
     summary: 'Изменение имени',
     description:
-      'Изменение имени, стоит гуард, который проверяет наличие роли админ или соответствие ид пользователя из токена',
+      'Изменение имени, меняет имя только тому пользователю, у которого стоит токен',
   })
   @ApiResponse({ status: 200, type: UserResponse })
-  @UseGuards(UserOptionsGuard)
-  @Put('rename/:id')
-  async renameUser(@Param('id') id: string, @Body() body: RenameDto) {
+  @Put('rename')
+  async renameUser(@UserId() id: string, @Body() body: RenameDto) {
     return this.userService.rename(id, body.name);
   }
   @ApiOperation({
     summary: 'Изменение аватарки',
     description:
-      'Изменение аватарки, стоит гуард, который проверяет наличие роли админ или соответствие ид пользователя из токена',
+      'Изменение аватарки, меняет аватарку только тому пользователю, у которого стоит токен',
   })
   @ApiResponse({ status: 200, type: UserResponse })
-  @UseGuards(UserOptionsGuard)
   @UseInterceptors(FileInterceptor('image'))
-  @Put('update-image/:id')
+  @Put('update-image')
   async updateImage(
-    @Param('id') id: string,
+    @UserId() id: string,
     @UploadedFile() image: Express.Multer.File,
   ) {
     return this.userService.changeImage(id, image);
